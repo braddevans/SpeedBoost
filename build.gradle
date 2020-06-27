@@ -25,6 +25,10 @@ buildscript {
             name = "SpongePowered"
             url = "http://repo.spongepowered.org/maven"
         }
+		maven {
+            name = "PorkMaven"
+            url = "https://maven.daporkchop.net"
+        }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
@@ -35,6 +39,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
 apply plugin: "java"
+apply plugin: "maven-publish"
 
 version = "0.0.1"
 group = "net.daporkchop"
@@ -80,7 +85,7 @@ repositories {
 ext {
     lombokVersion = "1.18.8"
     mixinVersion = "0.7.11-SNAPSHOT"
-    porklibVersion = "0.3.0-SNAPSHOT"
+    porklibVersion = "0.5.5-SNAPSHOT"
 }
 
 dependencies {
@@ -170,4 +175,30 @@ if (mixinPath != null) {
     )
 } else {
     throw new IllegalStateException("Unable to find mixin path!")
+}
+
+
+publishing {
+    repositories {
+        maven {
+            url 'https://nexus.piratescode.co.uk/repository/maven-' + (project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases') + '/'
+            credentials {
+                username 'publish'
+                password 'Pa££w0rd'
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "net.daporkchop.speedboost"
+            artifactId = "SpeedBoost-1.12.2"
+            version = project.version
+
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
 }
